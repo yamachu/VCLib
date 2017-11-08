@@ -1,0 +1,6 @@
+[submodule "src/World"]
+	path = src/World
+	url = https://github.com/yamachu/World.git
+[submodule "src/SPTK"]
+	path = src/SPTK
+	url = https://github.com/yamachu/SPTK.git
