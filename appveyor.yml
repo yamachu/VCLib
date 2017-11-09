@@ -1,0 +1,22 @@
+environment:
+  matrix:
+    - ARCH: "x86"
+    - ARCH: "x64"
+
+build_script:
+  - ./build_windows.bat
+
+artifacts:
+  - path: 'src\build\x64_vclib.dll'
+    name: x64_WORLD
+  - path: 'build\x86_vclib.dll'
+    name: x86_WORLD
+
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: "phbIUL1pW4otTYZTo79JgBo7dznsGhCGU3Jbs8jLhM482kySCkP2oXWofXKMPqtc"
+  artifact: /.*vclib.dll/
+  on:
+    appveyor_repo_tag: true
+  force_update: true
