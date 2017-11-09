@@ -1,0 +1,3 @@
+src/native/build
+src/native/.lock*
+tools/.waf*
