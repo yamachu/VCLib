@@ -8,7 +8,9 @@
 #include <SPTK.h>
 #endif
 
-void SPTK_mgcep(double *spectrum, int f0_length /* input */,
+#include "VCLib.h"
+
+void SPTK_mgcep(double *spectrum, int sp_length /* input */,
     double alpha /* a */,
     double gamma /* g */,
     int order /* m */,
@@ -24,7 +26,7 @@ void SPTK_mgcep(double *spectrum, int f0_length /* input */,
     double min_det /* f */,
     double *mcep /* output */)
 {
-    int ilng, n, i, j;
+    int ilng, n, i, j, total_frame;
 
     n = recursions;
 
@@ -36,7 +38,9 @@ void SPTK_mgcep(double *spectrum, int f0_length /* input */,
     else
         ilng = fft_length / 2 + 1;
 
-    for (i = 0; i < f0_length; i++)
+    total_frame = sp_length / (fft_length / 2 + 1);
+
+    for (i = 0; i < total_frame; i++)
     {
         mgcep(&spectrum[i * ilng], fft_length, &mcep[i * (order + 1)], order, alpha, gamma, n, min_iter, max_iter, end_cond, etype, eps, min_det, itype);
 
@@ -57,7 +61,7 @@ void SPTK_mgcep(double *spectrum, int f0_length /* input */,
 }
 
 void SPTK_mlsadf(double *wavform, int wavform_length, /* input */
-    double *mcep, int f0_length, /* input */
+    double *mcep, int mcep_length, /* input */
     int order, /* m */
     double alpha, /* a */
     int frame_period, /* p */
@@ -69,8 +73,10 @@ void SPTK_mlsadf(double *wavform, int wavform_length, /* input */
     int is_without_gain, /* g */
     double *y /* output */)
 {
-    int i, j, k, y_count;
+    int i, j, k, y_count, f0_length;
     double *c, *inc, *cc, *d, x;
+
+    f0_length = mcep_length / (order + 1);
 
     c = dgetmem(3 * (order + 1) + 3 * (pade + 1) + pade * (order + 2));
     cc = c + order + 1;
