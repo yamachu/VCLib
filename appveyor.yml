@@ -1,15 +1,20 @@
+image:
+  - Visual Studio 2017
+
 environment:
   matrix:
     - ARCH: "x86"
     - ARCH: "x64"
 
 build_script:
+  - git submodule init
+  - git submodule update
   - ./build_windows.bat
 
 artifacts:
   - path: 'src\build\x64_vclib.dll'
     name: x64_WORLD
-  - path: 'build\x86_vclib.dll'
+  - path: 'src\build\x86_vclib.dll'
     name: x86_WORLD
 
 deploy:
