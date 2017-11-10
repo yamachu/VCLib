@@ -18,3 +18,5 @@ deploy:
   file: "src/build/*libvclib.{so,dylib}"
   on:
     repo: yamachu/VCLib
+    tags: true
+  skip_cleanup: true
