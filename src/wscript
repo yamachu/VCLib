@@ -13,6 +13,7 @@ def configure(conf):
         conf.load('compiler_c')
     else:
         conf.env['MSVC_VERSIONS'] = ['msvc 15']
+        conf.env.MSVC_TARGETS = ['x86', 'x86_amd64']
         conf.load('msvc')
 
 def build(ctx):
