@@ -27,6 +27,7 @@ void SPTK_mgcep(double *spectrum, int sp_length /* input */,
     double *mcep /* output */)
 {
     int ilng, n, i, j, total_frame;
+    double *x;
 
     n = recursions;
 
@@ -39,11 +40,17 @@ void SPTK_mgcep(double *spectrum, int sp_length /* input */,
         ilng = fft_length / 2 + 1;
 
     total_frame = sp_length / (fft_length / 2 + 1);
+    x = dgetmem(ilng);
 
     for (i = 0; i < total_frame; i++)
     {
-        mgcep(&spectrum[i * ilng], fft_length, &mcep[i * (order + 1)], order, alpha, gamma, n, min_iter, max_iter, end_cond, etype, eps, min_det, itype);
+        for (j = 0; j < ilng; j++)
+        {
+            x[j] = spectrum[i * ilng + j];
+        }
 
+        mgcep(x, fft_length, &mcep[i * (order + 1)], order, alpha, gamma, n, min_iter, max_iter, end_cond, etype, eps, min_det, itype);
+        
         if (otype == 0 || otype == 1 || otype == 2 || otype == 4)
             ignorm(&mcep[i * (order + 1)], &mcep[i * (order + 1)], order, gamma);
 
@@ -58,6 +65,8 @@ void SPTK_mgcep(double *spectrum, int sp_length /* input */,
             for (j = order; j >= 1; j--)
                 mcep[i * (order + 1) + j] *= gamma;
     }
+
+    free(x);
 }
 
 void SPTK_mlsadf(double *wavform, int wavform_length, /* input */
