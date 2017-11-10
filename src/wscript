@@ -13,7 +13,7 @@ def configure(conf):
         conf.load('compiler_c')
     else:
         conf.env['MSVC_VERSIONS'] = ['msvc 15']
-		conf.load('msvc')
+        conf.load('msvc')
 
 def build(ctx):
     _cflg = '' if os.name == 'nt' else '-fPIC'
