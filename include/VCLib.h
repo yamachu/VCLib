@@ -28,3 +28,33 @@ void SPTK_mlsadf(
     float *y
     #endif
 );
+void DifferentialMelCepstrumCompensation(
+    #ifdef DOUBLE
+    double *rawform, int rawform_length,
+    double *sp, int sp_length,
+    double *diff_mcep, int diff_mcep_length,
+    #else
+    float *rawform, int rawform_length,
+    float *sp, int sp_length,
+    float *diff_mcep, int diff_mcep_length,
+    #endif
+    double alpha, double gamma,
+    int mcep_order,
+    int fft_length,
+    int itype,
+    int otype,
+    int min_iter,
+    int max_iter,
+    int recursions,
+    double eps,
+    double end_cond,
+    int etype,
+    double min_det,
+    int frame_period,
+    int interpolate_period,
+    #ifdef DOUBLE
+    double *out
+    #else
+    float *out
+    #endif
+);

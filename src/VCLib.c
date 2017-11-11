@@ -179,3 +179,51 @@ void SPTK_mlsadf(
     }
 }
 
+void DifferentialMelCepstrumCompensation(
+    #ifdef DOUBLE
+    double *rawform, int rawform_length,
+    double *sp, int sp_length,
+    double *diff_mcep, int diff_mcep_length,
+    #else
+    float *rawform, int rawform_length,
+    float *sp, int sp_length,
+    float *diff_mcep, int diff_mcep_length,
+    #endif
+    double alpha, double gamma,
+    int mcep_order,
+    int fft_length,
+    int itype,
+    int otype,
+    int min_iter,
+    int max_iter,
+    int recursions,
+    double eps,
+    double end_cond,
+    int etype,
+    double min_det,
+    int frame_period,
+    int interpolate_period,
+    #ifdef DOUBLE
+    double *out
+    #else
+    float *out
+    #endif
+)
+{
+    #ifdef DOUBLE
+    double *mcep = (double*)malloc(sizeof(double) * diff_mcep_length);
+    double *y = (double*)malloc(sizeof(double) * rawform_length);
+    #else
+    float *mcep = (float*)malloc(sizeof(float) * diff_mcep_length);
+    float *y = (float*)malloc(sizeof(float) * rawform_length);
+    #endif
+
+    SPTK_mgcep(sp, sp_length, alpha, gamma, mcep_order, fft_length, itype, otype, min_iter, max_iter, recursions, eps, end_cond, etype, min_det, mcep);
+
+    SPTK_mlsadf(rawform, rawform_length, mcep, diff_mcep_length, mcep_order, alpha, frame_period, interpolate_period, 5, 0, 1, 0, 0, y);
+
+    SPTK_mlsadf(y, rawform_length, mcep, diff_mcep_length, mcep_order, alpha, frame_period, interpolate_period, 5, 0, 0, 0, 0, out);
+
+    free(mcep);
+    free(y);
+}
