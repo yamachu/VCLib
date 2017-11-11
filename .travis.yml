@@ -8,6 +8,8 @@ script:
 - cd src
 - ../tools/waf configure
 - ../tools/waf -v
+- ../tools/waf configure --double
+- ../tools/waf -v
 - cd ../
 
 deploy:
@@ -15,7 +17,7 @@ deploy:
   api_key:
     secure: g4pmx2RUuyQ1q/yF2sh8/jxgmjqQQ5xYToAnbc73tTxpV8s2sy+H4GNTVwjmiV28wPd2gCqXNMsw/H4Mj1MYXZGrUdtTYoMDGqor3xVSljEfwozhAvVTd2bXN1+Df7kdJi1dpR5sGRZDLDjzeGJGDmo6DjgVS9ZCt6An+YOg8jo/uBmwUhBs9pOvtSdOhgWVpgsE7r/FaosbWjKP0NQLfgqhb5Is14MR49nkIDSRe8sHilNnfKB0ZcZGFg7kxoTFti35GCbxa8nQWmyvDWIkeKMqOPo6Sd6fPNCaywX7KJLHpTwKkq+3G6gf7QB5AivbDgzbaCu+Y3+SVqfLFD66k5qxv0GtFxXI9B1qdpB80q9hveA8MPn6zPGw+HL9pgxNSbDpSyYQC3nUS9Wq+MHau3SzrQUwt9hLg7b6g36vSknjT251T5HyQH/D+DUNznpmBI+TxRTde7/MBsFSx/ifxQV9uwqvG5QSXVZOnWdsVWEsMjXfD8xlIQLwl/XBKPEIx+Bg5q4lYaf8W7RiXYRV2qDBRuN04AnT1+IiOE36q2FD7tobuvuz8LmpmPusFXDA6BYfWbkWRMNNCQ5U2zWlp+XzcjCwvspMcQKTHnyt0QZniBVMqjXRrqCe+7zvKC+IfFMqxeUL1uWyS01f5ybsHTylMp+i6DTyzXJo8GD86g4=
   file_glob: true
-  file: "src/build/*libvclib.{so,dylib}"
+  file: "src/build/*libvclib*.{so,dylib}"
   on:
     repo: yamachu/VCLib
     tags: true

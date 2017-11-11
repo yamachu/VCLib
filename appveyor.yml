@@ -4,7 +4,13 @@ image:
 environment:
   matrix:
     - ARCH: "x86"
+      PREC: "DOUBLE"
+    - ARCH: "x86"
+      PREC: "FLOAT"
     - ARCH: "x64"
+      PREC: "DOUBLE"
+    - ARCH: "x64"
+      PREC: "FLOAT"
 
 build_script:
   - git submodule init
@@ -12,16 +18,20 @@ build_script:
   - ./build_windows.bat
 
 artifacts:
-  - path: 'src\build\x64_vclib.dll'
-    name: x64_WORLD
-  - path: 'src\build\x86_vclib.dll'
-    name: x86_WORLD
+  - path: 'src\build\x64_vclib_double.dll'
+    name: x64_vclib_double
+  - path: 'src\build\x86_vclib_double.dll'
+    name: x86_vclib_double
+  - path: 'src\build\x64_vclib_float.dll'
+    name: x64_vclib_float
+  - path: 'src\build\x86_vclib_float.dll'
+    name: x86_vclib_float
 
 deploy:
   provider: GitHub
   auth_token:
     secure: "phbIUL1pW4otTYZTo79JgBo7dznsGhCGU3Jbs8jLhM482kySCkP2oXWofXKMPqtc"
-  artifact: /.*vclib.dll/
+  artifact: /.*vclib_.*.dll/
   on:
     appveyor_repo_tag: true
   force_update: true
