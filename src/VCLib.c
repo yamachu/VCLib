@@ -79,7 +79,7 @@ void SPTK_mlsadf(double *wavform, int wavform_length, /* input */
     int is_tranpose, /* t */
     int is_invrese, /* v */
     int is_coef_b, /* b */
-    int is_without_gain, /* g */
+    int is_without_gain, /* k */
     double *y /* output */)
 {
     int i, j, k, y_count, f0_length;
