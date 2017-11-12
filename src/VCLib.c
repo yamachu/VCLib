@@ -40,9 +40,8 @@ void SPTK_mgcep(
 
     n = recursions;
 
-    if (recursions == -1)
+    if (n == -1)
         n = fft_length - 1;
-
     if (itype == 0)
         ilng = fft_length;
     else
@@ -68,7 +67,7 @@ void SPTK_mgcep(
             if (alpha != 0.0)
                 b2mc(b, b, order, alpha);
 
-        if (otype == 2 || otype ==4)
+        if (otype == 2 || otype == 4)
             gnorm(b, b, order, gamma);
 
         if (otype == 4 || otype == 5)
@@ -76,17 +75,19 @@ void SPTK_mgcep(
                 b[j] *= gamma;
 
         for (j = 0; j < order + 1; j++)
+        {
             #ifdef DOUBLE
             mcep[i * (order + 1) + j] = b[j];
             #else
             mcep[i * (order + 1) + j] = (float)b[j];
             #endif
+        }
     }
 
     free(x);
 }
 
-void SPTK_mlsadf(
+int SPTK_mlsadf(
     #ifdef DOUBLE
     double *wavform, int wavform_length, /* input */
     double *mcep, int mcep_length, /* input */
@@ -99,7 +100,7 @@ void SPTK_mlsadf(
     int frame_period, /* p */
     int i_period, /* i */ 
     int pade, /* P */
-    int is_tranpose, /* t */
+    int is_transpose, /* t */
     int is_invrese, /* v */
     int is_coef_b, /* b */
     int is_without_gain, /* k */
@@ -111,6 +112,8 @@ void SPTK_mlsadf(
 {
     int i, j, k, y_count, f0_length;
     double *c, *inc, *cc, *d, x;
+    Boolean bflag = is_coef_b, ngain = is_without_gain, transpose = is_transpose, inverse =
+    is_invrese;
 
     f0_length = mcep_length / (order + 1);
 
@@ -120,16 +123,23 @@ void SPTK_mlsadf(
     d = inc + order + 1;
 
     for (i = 0; i < order + 1; i++)
+    {
         c[i] = mcep[i];
+    }
 
-    if (is_coef_b == 0)
+    if (!bflag)
         mc2b(c, c, order, alpha);
 
-    if (is_invrese)
+    if (inverse)
     {
-        for (i = 0; i <= order; i++)
-            c[i] *= -1;
-        c[0] = is_without_gain ? 0 : c[0];
+        if (!ngain) {
+            for (i = 0; i <= order; i++)
+               c[i] *= -1;
+         } else {
+            c[0] = 0;
+            for (i = 1; i <= order; i++)
+               c[i] *= -1;
+         }
     }
 
     for (i = 1, y_count = 0; i < f0_length; i++)
@@ -137,14 +147,18 @@ void SPTK_mlsadf(
         for (j = 0; j < order + 1; j++)
             cc[j] = mcep[i * (order + 1) + j];
 
-        if (is_coef_b == 0)
+        if (!bflag)
             mc2b(cc, cc, order, alpha);
 
-        if (is_invrese)
-        {
-            for (j = 0; j <= order; j++)
-                cc[i] *= -1;
-            cc[0] = is_without_gain ? 0 : cc[0];
+        if (inverse) {
+            if (!ngain) {
+                for (j = 0; j <= order; j++)
+                    cc[j] *= -1;
+            } else {
+                cc[0] = 0;
+                for (j = 1; j <= order; j++)
+                    cc[j] *= -1;
+            }
         }
 
         for (j = 0; j <= order; j++)
@@ -154,18 +168,19 @@ void SPTK_mlsadf(
         {
             x = wavform[y_count];
 
-            if (is_without_gain == 0)
+            if (!ngain)
                 x *= exp(c[0]);
-            if (is_tranpose)
+            if (transpose)
                 x = mlsadft(x, c, order, alpha, pade, d);
             else
                 x = mlsadf(x, c, order, alpha, pade, d);
 
             #ifdef DOUBLE
-            y[y_count++] = x;
+            y[y_count] = x;
             #else
-            y[y_count++] = (float)x;
+            y[y_count] = (float)x;
             #endif
+            y_count++;
 
             if (!--j)
             {
@@ -177,53 +192,8 @@ void SPTK_mlsadf(
 
         movem(cc, c, sizeof(*cc), order + 1);
     }
-}
 
-void DifferentialMelCepstrumCompensation(
-    #ifdef DOUBLE
-    double *rawform, int rawform_length,
-    double *sp, int sp_length,
-    double *diff_mcep, int diff_mcep_length,
-    #else
-    float *rawform, int rawform_length,
-    float *sp, int sp_length,
-    float *diff_mcep, int diff_mcep_length,
-    #endif
-    double alpha, double gamma,
-    int mcep_order,
-    int fft_length,
-    int itype,
-    int otype,
-    int min_iter,
-    int max_iter,
-    int recursions,
-    double eps,
-    double end_cond,
-    int etype,
-    double min_det,
-    int frame_period,
-    int interpolate_period,
-    #ifdef DOUBLE
-    double *out
-    #else
-    float *out
-    #endif
-)
-{
-    #ifdef DOUBLE
-    double *mcep = (double*)malloc(sizeof(double) * diff_mcep_length);
-    double *y = (double*)malloc(sizeof(double) * rawform_length);
-    #else
-    float *mcep = (float*)malloc(sizeof(float) * diff_mcep_length);
-    float *y = (float*)malloc(sizeof(float) * rawform_length);
-    #endif
-
-    SPTK_mgcep(sp, sp_length, alpha, gamma, mcep_order, fft_length, itype, otype, min_iter, max_iter, recursions, eps, end_cond, etype, min_det, mcep);
-
-    SPTK_mlsadf(rawform, rawform_length, mcep, diff_mcep_length, mcep_order, alpha, frame_period, interpolate_period, 5, 0, 1, 0, 0, y);
-
-    SPTK_mlsadf(y, rawform_length, mcep, diff_mcep_length, mcep_order, alpha, frame_period, interpolate_period, 5, 0, 0, 0, 0, out);
-
-    free(mcep);
-    free(y);
+    free(c);
+    
+    return y_count;
 }
