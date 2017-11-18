@@ -20,6 +20,7 @@ def configure(conf):
 
 def build(ctx):
     _cflg = ' '.join(['' if os.name == 'nt' else '-fPIC', '-DDOUBLE' if ctx.env.DOUBLE else ''])
+    _defs = '' if os.name != 'nt' else 'vclib.def'
     ctx.objects(source='SPTK/bin/fft/_fft.c SPTK/lib/getmem.c SPTK/lib/movem.c SPTK/lib/fillz.c SPTK/bin/mgcep/_mgcep.c SPTK/bin/mlsadf/_mlsadf.c SPTK/bin/b2mc/_b2mc.c SPTK/bin/gc2gc/_gc2gc.c SPTK/bin/gnorm/_gnorm.c SPTK/bin/ifftr/_ifftr.c SPTK/bin/fftr/_fftr.c  SPTK/bin/ifft/_ifft.c SPTK/bin/ignorm/_ignorm.c SPTK/bin/mc2b/_mc2b.c  SPTK/lib/theq.c', includes='SPTK/include', target='sptk', features='c', cflags=_cflg)
 
-    ctx.shlib(source='VCLib.c', includes='SPTK/include ../include', use='sptk', target='vclib_{}'.format('double' if ctx.env.DOUBLE else 'float'), features='c', clags=_cflg)
+    ctx.shlib(source='VCLib.c', includes='SPTK/include ../include', use='sptk', target='vclib_{}'.format('double' if ctx.env.DOUBLE else 'float'), features='c', clags=_cflg, defs=_defs)

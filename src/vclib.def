@@ -1,0 +1,5 @@
+LIBRARY vclib
+
+EXPORTS
+    SPTK_mgcep @1
+    SPTK_mlsadf @2
