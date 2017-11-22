@@ -28,3 +28,30 @@ int SPTK_mlsadf(
     float *y
     #endif
 );
+void GetUserMcep(double *sp, int length,
+    #ifdef DOUBLE
+    double *result
+    #else
+    float *result
+    #endif
+);
+void GetCompensationWavForm(
+    #ifdef DOUBLE
+    double *x,
+    int x_length,
+    double *userMcep,
+    double *targetMcep,
+    int mcep_length,
+    double *y
+    #else
+    float *x,
+    int x_length,
+    float *userMcep,
+    float *targetMcep,
+    int mcep_length,
+    float *y
+    #endif
+);
+void Standardization1DArray(float *source, int length, int dim, float *result);
+void UnStandardization1DArray(float *source, int length, int dim, float *means, float* sds, float * result);
+void VarianceCompensation(float *source, int length, int dim, float *coef, float *result);

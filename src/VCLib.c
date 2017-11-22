@@ -197,3 +197,123 @@ int SPTK_mlsadf(
     
     return y_count;
 }
+
+void Standardization1DArray(float *source, int length, int dim, float *result)
+{
+    int i, j;
+    int frames = length / dim;
+    float *means = (float*)calloc(dim, sizeof(float));
+    float *sds = (float*)calloc(dim, sizeof(float));
+
+    for (i = 0; i < frames; i++)
+    {
+        for (j = 0; j < dim; j++)
+            means[j] += source[i * dim + j]; // オーバーフロー対策で先に割る？
+    }
+    for (i = 0; i < dim; i++)
+        means[i] /= frames;
+
+    for (i = 0; i < frames; i++)
+    {
+        for (j = 0; j < dim; j++)
+            sds[j] += (source[i * dim + j] - means[j]) * (source[i * dim + j] - means[j]);
+    }
+    for (i = 0; i < dim; i++)
+        sds[i] = sqrt(sds[i] / frames);
+
+    for (i = 0; i < frames; i++)
+    {
+        for (j = 0; j < dim; j++)
+            result[j] = (source[i * dim + j] - means[j]) / sds[j];
+    }
+
+    free(means);
+    free(sds);
+}
+
+void UnStandardization1DArray(float *source, int length, int dim, float *means, float* sds, float * result)
+{
+    int i, j;
+    int frames = length / dim;
+
+    for (i = 0; i < frames; i++)
+    {
+        for (j = 0; j < dim; j++)
+            result[i * dim + j] = source[i * dim + j] * sds[j] + means[j];
+    }
+}
+
+void VarianceCompensation(float *source, int length, int dim, float *coef, float *result)
+{
+    int i, j;
+    int frames = length / dim;
+    float *means = (float*)calloc(dim, sizeof(float));
+
+    for (i = 0; i < frames; i++)
+    {
+        for (j = 0; j < dim; j++)
+            means[j] += source[i * dim + j]; // オーバーフロー対策で先に割る？
+    }
+    
+    for (i = 0; i < dim; i++)
+        means[i] /= frames;
+
+    for (i = 0; i < frames; i++) 
+    {
+        for (j = 0; j < dim; j++)
+            result[i * dim + j] = (source[i * dim + j] - means[j]) * coef[j] + means[j];
+    }
+
+    free(means);
+}
+
+void GetUserMcep(double *sp, int length,
+#ifdef DOUBLE
+    double *result)
+#else
+    float *result)
+#endif
+{
+    int i;
+
+#ifdef DOUBLE
+    SPTK_mgcep(sp, length, 0.42, 0, 24, 1024, 4, 0, 2, 0, -1, 1e-10, 0.001, 1, 0.000001, result);
+#else
+    float *spf = (float*)malloc(sizeof(float) * length);
+
+    for (i = 0; i < length; i++)
+        spf[i] = (float)sp[i];
+
+    SPTK_mgcep(spf, length, 0.42, 0, 24, 1024, 4, 0, 2, 0, -1, 1e-10, 0.001, 1, 0.000001, result);
+#endif
+}
+
+void GetCompensationWavForm(
+    #ifdef DOUBLE
+    double *x,
+    int x_length,
+    double *userMcep,
+    double *targetMcep,
+    int mcep_length,
+    double *y
+    #else
+    float *x,
+    int x_length,
+    float *userMcep,
+    float *targetMcep,
+    int mcep_length,
+    float *y
+    #endif
+)
+{
+    int l;
+    #ifdef DOUBLE
+    double *tmp = (double*)malloc(sizeof(double) * x_length);
+    #else
+    float *tmp = (float*)malloc(sizeof(float) * x_length);
+    #endif
+    l = SPTK_mlsadf(x, x_length, userMcep, mcep_length, 24, 0.42, 80, 1, 5, 0, 1, 0, 0, tmp);
+    SPTK_mlsadf(tmp, l, targetMcep, mcep_length, 24, 0.42, 80, 1, 5, 0, 0, 0, 0, y);
+
+    free(tmp);
+}

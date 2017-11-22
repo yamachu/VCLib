@@ -3,3 +3,8 @@ LIBRARY vclib
 EXPORTS
     SPTK_mgcep @1
     SPTK_mlsadf @2
+    GetUserMcep @3
+    GetCompensationWavForm @4
+    Standardization1DArray @5
+    UnStandardization1DArray @6
+    VarianceCompensation @7
