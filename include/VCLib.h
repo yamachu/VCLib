@@ -35,7 +35,7 @@ void GetUserMcep(double *sp, int length,
     float *result
     #endif
 );
-void GetCompensationWavForm(
+int GetCompensationWavForm(
     #ifdef DOUBLE
     double *x,
     int x_length,

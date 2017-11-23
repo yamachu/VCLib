@@ -288,7 +288,7 @@ void GetUserMcep(double *sp, int length,
 #endif
 }
 
-void GetCompensationWavForm(
+int GetCompensationWavForm(
     #ifdef DOUBLE
     double *x,
     int x_length,
@@ -313,7 +313,9 @@ void GetCompensationWavForm(
     float *tmp = (float*)malloc(sizeof(float) * x_length);
     #endif
     l = SPTK_mlsadf(x, x_length, userMcep, mcep_length, 24, 0.42, 80, 1, 5, 0, 1, 0, 0, tmp);
-    SPTK_mlsadf(tmp, l, targetMcep, mcep_length, 24, 0.42, 80, 1, 5, 0, 0, 0, 0, y);
+    l = SPTK_mlsadf(tmp, l, targetMcep, mcep_length, 24, 0.42, 80, 1, 5, 0, 0, 0, 0, y);
 
     free(tmp);
+
+    return l;
 }
