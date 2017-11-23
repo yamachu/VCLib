@@ -135,11 +135,11 @@ int SPTK_mlsadf(
         if (!ngain) {
             for (i = 0; i <= order; i++)
                c[i] *= -1;
-         } else {
+        } else {
             c[0] = 0;
             for (i = 1; i <= order; i++)
                c[i] *= -1;
-         }
+        }
     }
 
     for (i = 1, y_count = 0; i < f0_length; i++)
@@ -267,25 +267,15 @@ void VarianceCompensation(float *source, int length, int dim, float *coef, float
     free(means);
 }
 
-void GetUserMcep(double *sp, int length,
-#ifdef DOUBLE
-    double *result)
-#else
-    float *result)
-#endif
+void GetUserMcep(
+    #ifdef DOUBLE
+    double *sp, int length, double *result
+    #else
+    float *sp, int length, float *result
+    #endif
+)
 {
-    int i;
-
-#ifdef DOUBLE
-    SPTK_mgcep(sp, length, 0.42, 0, 24, 1024, 4, 0, 2, 0, -1, 1e-10, 0.001, 1, 0.000001, result);
-#else
-    float *spf = (float*)malloc(sizeof(float) * length);
-
-    for (i = 0; i < length; i++)
-        spf[i] = (float)sp[i];
-
-    SPTK_mgcep(spf, length, 0.42, 0, 24, 1024, 4, 0, 2, 0, -1, 1e-10, 0.001, 1, 0.000001, result);
-#endif
+    SPTK_mgcep(sp, length, 0.42, 0, 24, 1024, 4, 0, 2, 0, -1, 1e-10, 0.001, 1, 0.0, result);
 }
 
 int GetCompensationWavForm(

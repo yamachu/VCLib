@@ -28,11 +28,11 @@ int SPTK_mlsadf(
     float *y
     #endif
 );
-void GetUserMcep(double *sp, int length,
+void GetUserMcep(
     #ifdef DOUBLE
-    double *result
+    double *sp, int length, double *result
     #else
-    float *result
+    float *sp, int length, float *result
     #endif
 );
 int GetCompensationWavForm(
