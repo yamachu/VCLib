@@ -224,7 +224,7 @@ void Standardization1DArray(float *source, int length, int dim, float *result)
     for (i = 0; i < frames; i++)
     {
         for (j = 0; j < dim; j++)
-            result[j] = (source[i * dim + j] - means[j]) / sds[j];
+            result[i * dim + j] = (source[i * dim + j] - means[j]) / sds[j];
     }
 
     free(means);
