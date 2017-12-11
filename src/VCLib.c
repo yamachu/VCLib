@@ -231,7 +231,7 @@ void Standardization1DArray(float *source, int length, int dim, float *result)
     free(sds);
 }
 
-void UnStandardization1DArray(float *source, int length, int dim, float *means, float* sds, float * result)
+void UnStandardization1DArray(float *source, int length, int dim, float *means, float *sds, float *result)
 {
     int i, j;
     int frames = length / dim;

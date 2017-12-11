@@ -53,5 +53,5 @@ int GetCompensationWavForm(
     #endif
 );
 void Standardization1DArray(float *source, int length, int dim, float *result);
-void UnStandardization1DArray(float *source, int length, int dim, float *means, float* sds, float * result);
+void UnStandardization1DArray(float *source, int length, int dim, float *means, float *sds, float *result);
 void VarianceCompensation(float *source, int length, int dim, float *coef, float *result);
