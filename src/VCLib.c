@@ -309,3 +309,45 @@ int GetCompensationWavForm(
 
     return l;
 }
+
+int GetInversedWavForm(
+    #ifdef DOUBLE
+    double *x,
+    int x_length,
+    double *userMcep,
+    int mcep_length,
+    double *y
+    #else
+    float *x,
+    int x_length,
+    float *userMcep,
+    int mcep_length,
+    float *y
+    #endif
+)
+{
+    int l;
+    l = SPTK_mlsadf(x, x_length, userMcep, mcep_length, 24, 0.42, 80, 1, 5, 0, 1, 0, 0, y);
+    return l;
+}
+
+int GetFilteredWavForm(
+    #ifdef DOUBLE
+    double *x,
+    int x_length,
+    double *targetMcep,
+    int mcep_length,
+    double *y
+    #else
+    float *x,
+    int x_length,
+    float *targetMcep,
+    int mcep_length,
+    float *y
+    #endif
+)
+{
+    int l;
+    l = SPTK_mlsadf(x, x_length, targetMcep, mcep_length, 24, 0.42, 80, 1, 5, 0, 0, 0, 0, y);
+    return l;
+}

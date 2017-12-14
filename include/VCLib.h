@@ -55,3 +55,33 @@ int GetCompensationWavForm(
 void Standardization1DArray(float *source, int length, int dim, float *result);
 void UnStandardization1DArray(float *source, int length, int dim, float *means, float *sds, float *result);
 void VarianceCompensation(float *source, int length, int dim, float *coef, float *result);
+int GetInversedWavForm(
+    #ifdef DOUBLE
+    double *x,
+    int x_length,
+    double *userMcep,
+    int mcep_length,
+    double *y
+    #else
+    float *x,
+    int x_length,
+    float *userMcep,
+    int mcep_length,
+    float *y
+    #endif
+);
+int GetFilteredWavForm(
+    #ifdef DOUBLE
+    double *x,
+    int x_length,
+    double *targetMcep,
+    int mcep_length,
+    double *y
+    #else
+    float *x,
+    int x_length,
+    float *targetMcep,
+    int mcep_length,
+    float *y
+    #endif
+);
