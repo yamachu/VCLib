@@ -445,4 +445,5 @@ for (j = 0; j < f0_length; j++) {
     for (i = 0; i < no; i++)
         output[j * no + i] = x[i];
 }
+free(x);
 }
