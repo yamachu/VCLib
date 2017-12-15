@@ -85,3 +85,24 @@ int GetFilteredWavForm(
     float *y
     #endif
 );
+void SPTK_mgc2sp(
+    #ifdef DOUBLE
+    double *fp /* mcep */,
+    #else
+    float *fp /* mcep */,
+    #endif
+    int mcep_length,
+    double alpha,
+    double gamma,
+    int m,
+    int norm,
+    int mulg,
+    int l /* FFT length */,
+    int phase,
+    int otype,
+    #ifdef DOUBLE
+    double *output
+    #else
+    float *output
+    #endif
+);

@@ -351,3 +351,98 @@ int GetFilteredWavForm(
     l = SPTK_mlsadf(x, x_length, targetMcep, mcep_length, 24, 0.42, 80, 1, 5, 0, 0, 0, 0, y);
     return l;
 }
+
+void SPTK_mgc2sp(
+#ifdef DOUBLE
+double *fp /* mcep */,
+#else
+float *fp /* mcep */,
+#endif
+int mcep_length,
+double alpha,
+double gamma,
+int m,
+int norm,
+int mulg,
+int l /* FFT length */,
+int phase,
+int otype,
+#ifdef DOUBLE
+double *output
+#else
+float *output
+#endif
+)
+{
+int no, i, j, f0_length;
+double *c, *x, *y, logk;
+
+x = dgetmem(l + l + m + 1);
+y = x + l;
+c = y + l;
+f0_length = mcep_length / (m + 1);
+
+no = l / 2 + 1;
+logk = 20.0 / log(10.0);
+
+for (j = 0; j < f0_length; j++) {
+    for (i = 0; i < m + 1; i++)
+        c[i] = fp[i * (m + 1) + j];
+
+    if (norm)
+        ignorm(c, c, m, gamma);
+    else if (mulg) {
+        if (gamma == 0) {
+        fprintf(stderr,
+                "gamma for input mgc coefficients should not equal to 0 if you specify -u option!\n");
+        }
+        c[0] = (c[0] - 1.0) / gamma;
+    }
+
+    if (mulg) {
+        if (gamma == 0) {
+        fprintf(stderr,
+                "gamma for input mgc coefficients should not equal to 0 if you specify -u option!\n");
+        }
+        for (i = m; i > 0; i--)
+        c[i] /= gamma;
+    }
+
+    mgc2sp(c, m, alpha, gamma, x, y, l);
+
+    if (phase)
+        switch (otype) {
+        case 1:
+        for (i = no; i--;)
+            x[i] = y[i];
+        break;
+        case 2:
+        for (i = no; i--;)
+            x[i] = y[i] * 180 / PI;
+        break;
+        default:
+        for (i = no; i--;)
+            x[i] = y[i] / PI;
+        break;
+    } else
+        switch (otype) {
+        case 1:
+            break;
+        case 2:
+            for (i = no; i--;)
+            x[i] = exp(x[i]);
+            break;
+        case 3:
+            for (i = no; i--;)
+            x[i] = exp(2 * x[i]);
+            break;
+        default:
+            for (i = no; i--;)
+            x[i] *= logk;
+            break;
+        }
+
+    for (i = 0; i < no; i++)
+        output[j * no + i] = x[i];
+}
+}
